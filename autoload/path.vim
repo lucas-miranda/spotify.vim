@@ -1,9 +1,38 @@
+"
+" TODO:
+"   - [ ] Treat cases where path ends with separator
+"   - [ ] Auto identify separator used at path
+"
+
 function! path#separator()
     if has('win32')
         return '\'
     endif
 
     return '/'
+endfunction
+
+function! path#parent_fullpath(path, ...)
+    if a:0 > 0 && type(a:1) == 1 " 1: string
+        let l:separator = a:1
+    else
+        let l:separator = path#separator()
+    endif
+
+    let l:parent_fullpath = ''
+
+    let l:path_splitted = split(a:path, l:separator)
+    let l:index = 0
+
+    while l:index < len(l:path_splitted)
+        if l:index < len(l:path_splitted) - 1
+            let l:parent_fullpath .= l:path_splitted[l:index] . l:separator
+        endif
+
+        let l:index += 1
+    endwhile
+
+    return l:parent_fullpath
 endfunction
 
 function! path#child_fullpath(path, item_name, ...)

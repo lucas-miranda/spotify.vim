@@ -25,8 +25,7 @@ for process in processes:
 
         process_path = pathlib.PurePath(process_name)
         if process_path.name.lower() == 'spotify.exe' and len(process['title']) > 0 and not (process['title'] in ignore_titles):
-            vim.command("let l:spotify_data = {{ 'title': '{}' }}".format(process['title']))
-            #print('process name: {}, pid: {}, title: \'{}\''.format(process_name, process['pid'], process['title']))
+            vim.command('let l:spotify_data = {{ "title": "{}" }}'.format(process['title'].replace('"', '\"')))
     except Exception:
         pass
 
@@ -56,15 +55,18 @@ function! spotify#std_providers#win32_provider#request_update(timer_id) abort
         \ })
     else
         let l:matches = matchlist(l:title, '\(.\+\) - \(.\+\)')
-        let l:track_name = l:matches[1]
-        let l:artist = l:matches[2]
 
-        call spotify#player#update({
-        \   'type': 'track',
-        \   'name': l:track_name,
-        \   'artist': l:artist,
-        \   'is_playing': 1
-        \ })
+        if len(l:matches) >= 3
+            let l:track_name = l:matches[1]
+            let l:artist = l:matches[2]
+
+            call spotify#player#update({
+            \   'type': 'track',
+            \   'name': l:track_name,
+            \   'artist': l:artist,
+            \   'is_playing': 1
+            \ })
+        endif
     endif
 
     let s:request_errors_count = 0 " each successful request resets errors count

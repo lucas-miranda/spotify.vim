@@ -4,6 +4,8 @@ if !exists('s:spotify_providers')
     let s:is_std_providers_loaded = 0
 endif
 
+let s:me = resolve(expand('<sfile>:p'))
+
 " ------------ "
 "  public api
 " ------------ "
@@ -22,18 +24,10 @@ function! spotify#providers#load(...) abort
         return
     endif
 
-    let l:providers_fullpath = '.'
-
-    if exists('g:plug_home')
-        let l:providers_fullpath = g:plug_home . '\spotify.vim\autoload\spotify\std_providers'
-    else
-        let l:providers_fullpath = resolve(expand('<sfile>:p:h'))
-    endif
-
-    let l:providers_path = path#child_fullpath(l:providers_fullpath, 'nvim')
+    let l:providers_path = path#parent_fullpath(s:me) . 'std_providers' . path#separator()
     let l:providers_files = glob(l:providers_path . '*.vim', 0, 1)
 
-    if type(l:providers_files) != 3
+    if type(l:providers_files) != 3 " 3: list
         return
     endif
 
@@ -58,6 +52,7 @@ function! spotify#providers#load(...) abort
     endfor
 
     let s:is_std_providers_loaded = 1
+    echo 'Registered providers successfully'
 endfunction
 
 function! spotify#providers#register(name, provider) abort
@@ -66,7 +61,7 @@ endfunction
 
 function! spotify#providers#get(name) abort
     if !has_key(s:spotify_providers, a:name)
-        echoerr 'Invalid provider name \'' . a:name . '\''
+        echoerr "Invalid provider name '" . a:name . "'"
         return
     endif
 
