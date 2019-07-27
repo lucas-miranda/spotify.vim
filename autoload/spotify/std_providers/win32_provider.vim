@@ -54,11 +54,11 @@ function! spotify#std_providers#win32_provider#request_update(timer_id) abort
         \   'is_playing': 0
         \ })
     else
-        let l:matches = matchlist(l:title, '\(.\+\) - \(.\+\)')
+        let l:matches = matchlist(l:title, '\(.\{-1,}\) - \(.\+\)')
 
         if len(l:matches) >= 3
-            let l:track_name = l:matches[1]
-            let l:artist = l:matches[2]
+            let l:track_name = l:matches[2]
+            let l:artist = l:matches[1]
 
             call spotify#player#update({
             \   'type': 'track',
