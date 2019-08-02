@@ -52,7 +52,10 @@ function! spotify#providers#load(...) abort
     endfor
 
     let s:is_std_providers_loaded = 1
-    echo 'Registered providers successfully'
+
+    if g:spotify_providers_verbose > 0
+        echo 'Registered providers successfully'
+    endif
 endfunction
 
 function! spotify#providers#register(name, provider) abort
