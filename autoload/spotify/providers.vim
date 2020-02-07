@@ -1,6 +1,6 @@
 if !exists('s:spotify_providers')
     let s:spotify_providers = {}
-    let g:spotify_providers_verbose = 1
+    let g:spotify_providers_verbose = 0
     let s:is_std_providers_loaded = 0
 endif
 
