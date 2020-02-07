@@ -18,14 +18,14 @@ Dependencies
 
 - [NeoVim](https://neovim.io/)
 - Python 2 (with vim correctly detecting it)
- - [pywin32](https://github.com/mhammond/pywin32)
- - [pynvim](https://github.com/neovim/pynvim)
+  - [pywin32](https://github.com/mhammond/pywin32)
+  - [pynvim](https://github.com/neovim/pynvim)
 
 ### Linux
 
 - [NeoVim](https://neovim.io/)
 - Python 3 (with vim correctly detecting it)
- - [pynvim](https://github.com/neovim/pynvim)
+  - [pynvim](https://github.com/neovim/pynvim)
 - [xdotool](https://www.semicomplete.com/projects/xdotool/)
 
 Installation
@@ -34,8 +34,8 @@ Installation
 Using a package manager:
 
  - [vim-plug](https://github.com/junegunn/vim-plug):
-  - Add `Plug 'lucas-miranda/spotify.vim'` 
-  - `:PlugInstall`
+   - Add `Plug 'lucas-miranda/spotify.vim'` 
+   - `:PlugInstall`
 
 Planned
 --------
