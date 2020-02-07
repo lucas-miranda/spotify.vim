@@ -1,6 +1,6 @@
 if !exists('s:spotify_providers')
-    let g:spotify_providers_verbose = 0
     let s:spotify_providers = {}
+    let g:spotify_providers_verbose = 1
     let s:is_std_providers_loaded = 0
 endif
 
@@ -18,9 +18,6 @@ function! spotify#providers#load(...) abort
     endif
 
     if s:is_std_providers_loaded && !l:force_load
-        if g:spotify_providers_verbose > 0
-            echo 'Providers already loaded'
-        endif
         return
     endif
 
@@ -46,9 +43,9 @@ function! spotify#providers#load(...) abort
 
         call spotify#providers#register(l:name, l:provider)
 
-        if g:spotify_providers_verbose > 0
+	if g:spotify_providers_verbose > 0
             echo 'Registered Provider: ' . l:name
-        endif
+	endif
     endfor
 
     let s:is_std_providers_loaded = 1

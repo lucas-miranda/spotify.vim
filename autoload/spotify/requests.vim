@@ -6,7 +6,12 @@ if !exists('g:provider_name')
     let g:spotify_requests_delay = 1 " seconds
     let g:spotify_verbose = 0
     let g:max_requests_failed = 3
-    let g:provider_name = "win32"
+
+    if has('win32')
+        let g:provider_name = "win32"
+    elseif has('unix')
+        let g:provider_name = "unix"
+    endif
 endif
 
 " ------------- "

@@ -20,7 +20,6 @@ function! path#parent_fullpath(path, ...)
     endif
 
     let l:parent_fullpath = ''
-
     let l:path_splitted = split(a:path, l:separator)
     let l:index = 0
 
@@ -31,6 +30,13 @@ function! path#parent_fullpath(path, ...)
 
         let l:index += 1
     endwhile
+
+    if has('unix')
+        " prepend unix '/' to fullpath
+        if a:path[0] == l:separator
+            let l:parent_fullpath = l:separator . l:parent_fullpath
+        endif
+    endif
 
     return l:parent_fullpath
 endfunction

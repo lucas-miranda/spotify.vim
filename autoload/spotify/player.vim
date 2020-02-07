@@ -67,7 +67,7 @@ function! spotify#player#update(...) abort
     elseif a:0 > 0 && type(a:1) == 4 && !empty(a:1) " 4: dict
         let s:track_data.type = a:1.type
 
-        if s:track_data.type ==? 'ad'
+        if s:track_data.type ==? 'ad' || s:track_data.type ==? 'none'
             " nothing to deal with
         elseif s:track_data.type ==? 'track'
             if has_key(a:1, 'name')
