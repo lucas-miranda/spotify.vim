@@ -4,30 +4,25 @@ import subprocess
 import re
 import vim
 
-vim.command("let l:spotify_data = { 'title': ''}");
+song_data = {
+    'title': '',
+    'artist': '',
+    'status': '' 
+}
 
-window_ids_regex = re.compile(r'\n')
-spotify_window_title_regex = re.compile(r'(.+)\-(.+)\n?')
+playerctl_process = subprocess.run(['playerctl', '--player=spotify', 'metadata', 'title'], capture_output=True, encoding='UTF-8')
+if playerctl_process.returncode == 0:
+    song_data['title'] = playerctl_process.stdout.replace('\n', '').replace("'", "''")
 
-xdotool_process = subprocess.run(["xdotool", "search", "--class", "spotify"], capture_output=True)
-xdotool_stdout = xdotool_process.stdout.decode("utf-8")
-windows_ids = window_ids_regex.split(xdotool_stdout)
+playerctl_process = subprocess.run(['playerctl', '--player=spotify', 'metadata', 'artist'], capture_output=True, encoding='UTF-8')
+if playerctl_process.returncode == 0:
+    song_data['artist'] = playerctl_process.stdout.replace('\n', '').replace("'", "''")
 
-for window_id in windows_ids:
-    xdotool_getwindowname = subprocess.run(["xdotool", "getwindowname", window_id], capture_output=True)
-    window_name = xdotool_getwindowname.stdout.decode("utf-8")
-    window_name_match = spotify_window_title_regex.match(window_name)
+playerctl_process = subprocess.run(['playerctl', '--player=spotify', 'status'], capture_output=True, encoding='UTF-8')
+if playerctl_process.returncode == 0:
+    song_data['status'] = playerctl_process.stdout.replace('\n', '').lower()
 
-    if window_name_match:
-        vim.command('let l:spotify_data = { "title": "%s - %s" }' % (window_name_match.group(1), window_name_match.group(2)))
-    else:
-        window_name_splitted = window_name.lower().split('\n')
-        if len(window_name_splitted) > 0:
-            window_name = window_name_splitted[0]
-
-        if window_name == "spotify free" or window_name == "spotify premium" or window_name == "advertisement":
-            vim.command('let l:spotify_data = { "title": "%s" }' % window_name)
-
+vim.command(f"""let l:spotify_data = {{ 'title': '{song_data['title']}', 'artist': '{song_data['artist']}', 'status': '{song_data['status']}' }}""")
 PYTHON_EOF
 
     return l:spotify_data
@@ -36,7 +31,7 @@ endfunction
 function! spotify#std_providers#unix_provider#request_update(timer_id) abort
     let l:status = s:spotify_status()
 
-    if type(l:status) != 4 || !has_key(l:status, 'title') || l:status['title'] == ''
+    if type(l:status) != 4 || l:status['status'] == ''
         call spotify#player#update({
         \   'type': 'none',
         \   'is_playing': 0
@@ -45,31 +40,26 @@ function! spotify#std_providers#unix_provider#request_update(timer_id) abort
     endif
 
     let l:title = l:status.title
+    let l:artist = l:status.artist
+    let l:song_status = l:status.status
+
+    let l:is_playing = 0
+    if l:song_status ==? 'playing'
+        let l:is_playing = 1
+    endif
 
     if l:title ==? 'advertisement'
         call spotify#player#update({
         \   'type': 'ad',
-        \   'is_playing': 1
-        \ })
-    elseif l:title ==? 'spotify free' || l:title ==? 'spotify premium'
-        call spotify#player#update({
-        \   'type': 'track',
-        \   'is_playing': 0
+        \   'is_playing': l:is_playing
         \ })
     else
-        let l:matches = matchlist(l:title, '\(.\{-1,}\) - \(.\+\)')
-
-        if len(l:matches) >= 3
-            let l:track_name = l:matches[2]
-            let l:artist = l:matches[1]
-
-            call spotify#player#update({
-            \   'type': 'track',
-            \   'name': l:track_name,
-            \   'artist': l:artist,
-            \   'is_playing': 1
-            \ })
-        endif
+        call spotify#player#update({
+        \   'type': 'track',
+        \   'name': l:title,
+        \   'artist': l:artist,
+        \   'is_playing': l:is_playing
+        \ })
     endif
 
     let s:request_errors_count = 0 " each successful request resets errors count

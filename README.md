@@ -26,7 +26,7 @@ Dependencies
 - [NeoVim](https://neovim.io/)
 - Python 3 (with vim correctly detecting it)
   - [pynvim](https://github.com/neovim/pynvim)
-- [xdotool](https://www.semicomplete.com/projects/xdotool/)
+- [playerctl](https://github.com/altdesktop/playerctl)
 
 Installation
 -------------
